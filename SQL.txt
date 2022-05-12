@@ -1,0 +1,205 @@
+//создаем Дамп базы
+
+
+drop table if exists ticket;
+drop table if exists prace;
+drop table if exists mesta;
+drop table if exists seans;
+drop table if exists zal;
+drop table if exists posetitel;
+drop table if exists kassa;
+drop table if exists `type`;
+
+CREATE TABLE `mesta` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`id_zal` INT(25) NOT NULL,
+`nomer` INT(25) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `type` (
+`id` INT NOT NULL AUTO_INCREMENT,
+`name` varchar(255) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `zal` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`name` varchar(255) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `ticket` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`id_kassa` INT(25) NOT NULL,
+`id_posetitel` INT(25) NOT NULL,
+`id_mesta` INT(25) NOT NULL,
+`id_seans` INT(25) NOT NULL,
+`id_prace` INT(25) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `seans` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`data` DATETIME NOT NULL,
+`name` varchar(255) NOT NULL,
+id_zal int(25) not null,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `kassa` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`telefon` INT(25) NOT NULL,
+`FIO` varchar(255) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `posetitel` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`FIO` varchar(255) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `prace` (
+`id` INT(25) NOT NULL AUTO_INCREMENT,
+`id_type` INT(25) NOT NULL,
+`data_p` INT(25) NOT NULL,
+`cena` INT(25) NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+ALTER TABLE `mesta` ADD CONSTRAINT `mesta_fk0` FOREIGN KEY (`id_zal`) REFERENCES `zal`(`id`);
+
+ALTER TABLE `ticket` ADD CONSTRAINT `ticket_fk0` FOREIGN KEY (`id_kassa`) REFERENCES `kassa`(`id`);
+
+ALTER TABLE `ticket` ADD CONSTRAINT `ticket_fk1` FOREIGN KEY (`id_posetitel`) REFERENCES `posetitel`(`id`);
+
+ALTER TABLE `ticket` ADD CONSTRAINT `ticket_fk2` FOREIGN KEY (`id_mesta`) REFERENCES `mesta`(`id`);
+
+ALTER TABLE `ticket` ADD CONSTRAINT `ticket_fk3` FOREIGN KEY (`id_seans`) REFERENCES `seans`(`id`);
+
+ALTER TABLE `ticket` ADD CONSTRAINT `ticket_fk4` FOREIGN KEY (`id_prace`) REFERENCES `prace`(`id`);
+
+ALTER TABLE `prace` ADD CONSTRAINT `prace_fk0` FOREIGN KEY (`id_type`) REFERENCES `type`(`id`);
+
+ALTER TABLE `seans` ADD CONSTRAINT `seans_fk0` FOREIGN KEY (`id_zal`) REFERENCES `zal`(`id`);
+
+
+
+INSERT INTO `posetitel` (`id`, `FIO`) VALUES
+(1, 'Ivan Ivanov'),
+(2, 'Mihail Mehali'),
+(3, 'Lisov Ilia'),
+(4, 'Ivan Ivanov'),
+(5, 'Mihail Mehali'),
+(6, 'Lisov Ilia');
+
+INSERT INTO `kassa` (`id`, `telefon`, `FIO`) VALUES
+(1, 453456, 'Petrov Aleksei'),
+(2, 546856, 'Kipenko Nikita '),
+(3, 456734, 'Kipicenko Xren'),
+(4, 453456, 'Petrov Aleksei'),
+(5, 546856, 'Ivanova Alina'),
+(6, 456734, 'Burin Xren ');
+
+
+INSERT INTO `type` (`id`, `name`) VALUES
+(1, 'VIP'),
+(2, 'norm'),
+(3, 'love'),
+(4, 'VIP'),
+(5, 'norm'),
+(6, 'love');
+
+
+INSERT INTO `prace` (`id`, `id_type`, `data_p`, `cena`) VALUES
+(1, 3, 20270420, 3000),
+(2, 2, 20280420, 2000),
+(3, 1, 20290420, 5000),
+(4, 3, 20270420, 3000),
+(5, 2, 20280420, 2000),
+(6, 1, 20290420, 5000);
+
+
+INSERT INTO `zal` (`id`, `name`) VALUES
+(1, 'Mercuri'),
+(2, 'Hell'),
+(3, 'Upiter'),
+(4, 'Mercuri'),
+(5, 'Kosmicheskyi'),
+(6, 'Blood');
+
+INSERT INTO `mesta` (`id`, `id_zal`, `nomer`) VALUES
+(1, 2, 5),
+(2, 4, 4),
+(3, 3, 3),
+(4, 2, 6),
+(5, 4, 4),
+(6, 3, 3);
+
+
+
+INSERT INTO `seans` (`id`, `data`, `name`, `id_zal`) VALUES
+(1, '2027-02-20 22:00:00', 'Korol Lev', 2),
+(2, '2028-04-20 22:00:00', 'Ludi X', 4),
+(3, '2029-04-20 22:00:00', 'Betman', 6),
+(4, '2027-02-20 22:00:00', 'Ono', 2),
+(5, '2028-04-20 22:00:00', 'Ludi X', 4),
+(6, '2029-04-20 22:00:00', 'Ono 2', 6);
+
+INSERT INTO `ticket` (`id`, `id_kassa`, `id_posetitel`, `id_mesta`, `id_seans`, `id_prace`) VALUES
+(1, 2, 1, 2, 3, 2),
+(2, 4, 6, 3, 5, 4),
+(3, 3, 2, 5, 4, 6),
+(4, 2, 1, 2, 3, 2),
+(5, 4, 6, 3, 5, 4),
+(6, 3, 2, 5, 4, 6);
+
+
+// SQL запросы
+
+// 1 запрос
+
+select s.id , z.id, DATE_FORMAT(s.data, '%d.%m.%Y') AS your_date, DATE_FORMAT(s.data, '%H:%i') AS your_time from seans s, zal z where s.id_zal = z.id
+
+-----------------------------------------------
+
+
+// 2 запрос
+
+select z.id, m.id, DATE_FORMAT(s.data, '%d.%m.%Y') AS your_date, DATE_FORMAT(s.data, '%H:%i') AS your_time , m.nomer as mesta,z.name as name from zal z, mesta m, seans s, ticket t where m.id_zal = z.id
+
+-----------------------------------------------
+
+
+// 3 запрос
+
+select s.id, DATE_FORMAT(s.data, '%d.%m.%Y') AS your_date, DATE_FORMAT(s.data, '%H:%i') AS your_time, (select count(1) from mesta m ) as vse_mesta, (select count(1) from mesta m ) - count(m.id) as pustie_mesta from mesta m, seans s, ticket t where m.id = t.id_mesta and s.id = t.id_seans group by s.id, DATE_FORMAT(s.data, '%d.%m.%Y') , DATE_FORMAT(s.data, '%H:%i') , (select count(1) from mesta m )
+ 
+-----------------------------------------------
+
+// 4 запрос
+
+select s.name, z.name, (select count(1) from mesta m  ) as vse_mesta, (select count(1) from mesta m  ) - count(m.id) as pustie_mesta
+	
+from  mesta m, seans s, ticket t , zal z
+where m.id = t.id_mesta
+and s.id = t.id_seans
+and m.id_zal = z.id 
+
+group by s.id, DATE_FORMAT(s.data, '%d.%m.%Y'), DATE_FORMAT(s.data, '%H:%i'), (select count(1) from mesta m  )
+
+-----------------------------------------------
+
+// 5 запрос
+
+select s.name, z.name, sum(p.cena) from prace p, seans s, zal z, ticket t where p.id = t.id_prace and s.id = t.id_seans and z.id = s.id_zal group by s.name, z.name
+
+-----------------------------------------------
+
+
+// 6 запрос
+
+select s.name, DATE_FORMAT(s.data, '%d.%m.%Y') AS your_date, DATE_FORMAT(s.data, '%H:%i') AS your_time , sum(p.cena) from prace p, seans s, ticket t where p.id = t.id_prace and s.id = t.id_seans group by s.name, DATE_FORMAT(s.data, '%d.%m.%Y'), DATE_FORMAT(s.data, '%H:%i') 
+
+-----------------------------------------------
